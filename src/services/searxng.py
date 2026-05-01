@@ -31,8 +31,8 @@ class SearXNGService:
             ["python", "-m", "searxng", "webapp"],
             cwd=searxng_dir,
             env=env,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
 
         if not self._wait_for_ready(timeout=60):
@@ -63,6 +63,7 @@ class SearXNGService:
                 self.process.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 self.process.kill()
+                self.process.wait()
             self.process = None
         self.running = False
 
