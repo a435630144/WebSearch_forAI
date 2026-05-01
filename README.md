@@ -1,17 +1,17 @@
 # WebSearch_forAI
 
-SearXNG 集成代理层，为 AI 提供联网搜索能力。
+SearXNG 集成代理层，为 AI 提供联网搜索能力（Node.js Express 版本）。
 
 ## 快速开始
 
 ```bash
-pip install -r requirements.txt
+npm install
 
 # 配置 SearXNG 服务器地址
 cp .env.example .env
 # 编辑 .env 文件，设置 SEARXNG_HOST 和 SEARXNG_PORT
 
-python src/main.py
+npm start
 ```
 
 ## API
@@ -44,7 +44,7 @@ Content-Type: application/json
 | **query** | string | **是** | - | 搜索关键词 |
 | num_results | int | 否 | 10 | 返回结果数量 (1-50) |
 | mode | string | 否 | "auto" | 模式：auto/list/extract |
-| engines | array | 否 | [] | 指定引擎列表，例如 `["baidu", "bing"]`。留空使用全部引擎 |
+| engines | array | 否 | [] | 指定引擎列表，例如 `["baidu", "bing"]` |
 | time_range | string | 否 | "" | 时间范围：`""` (不限), `day`, `week`, `month`, `year` |
 
 **请求示例：**
@@ -72,7 +72,7 @@ Content-Type: application/json
         "url": "https://example.com/article",
         "snippet": "文章摘要内容...",
         "engine": "baidu",
-        "publishedDate": "2026-01-01T12:00:00"
+        "publishedDate": "2026-01-01"
       }
     ],
     "extractedData": null,
@@ -84,24 +84,6 @@ Content-Type: application/json
   }
 }
 ```
-
-**返回字段说明：**
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| success | bool | 请求是否成功 |
-| data.query | string | 查询的关键词 |
-| data.mode | string | 响应模式 |
-| data.results | array | 搜索结果列表 |
-| data.results[].title | string | 结果标题 |
-| data.results[].url | string | 结果链接 |
-| data.results[].snippet | string | 结果摘要 |
-| data.results[].engine | string | 来源引擎 |
-| data.results[].publishedDate | string | 发布时间 |
-| data.extractedData | object | 提取的实体数据（extract 模式） |
-| data.meta.total | int | 结果总数 |
-| data.meta.cached | bool | 是否来自缓存 |
-| data.meta.responseTime | int | 响应时间（毫秒） |
 
 **mode 参数说明：**
 
@@ -125,31 +107,18 @@ Content-Type: application/json
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| SEARXNG_HOST | 127.0.0.1 | SearXNG 服务器 IP 地址 |
+| SEARXNG_HOST | 192.168.3.64 | SearXNG 服务器 IP 地址 |
 | SEARXNG_PORT | 8080 | SearXNG 端口 |
 | API_PORT | 4001 | 本 API 服务端口 |
 | CACHE_TTL | 300 | 内存缓存有效期（秒） |
 | REQUEST_TIMEOUT | 30000 | 搜索请求超时时间（毫秒） |
 
-## SearXNG 配置
+## 技术栈
 
-推荐只启用国内可访问的搜索引擎，修改 `settings.yml`：
-
-```yaml
-engines:
-  - name: baidu
-    engine: baidu
-  - name: 360search
-    engine: 360search
-  - name: bing
-    engine: bing
-  - name: wikipedia
-    engine: wikipedia
-```
-
-超时配置建议：
-
-```yaml
-outgoing:
-  request_timeout: 10.0
-```
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **HTTP Client**: axios
+- **HTML Parsing**: cheerio
+- **Caching**: node-cache
+- **Environment Variables**: dotenv
+- **CORS**: cors

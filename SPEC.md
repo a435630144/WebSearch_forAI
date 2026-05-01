@@ -26,13 +26,13 @@
 
 | 组件 | 技术选型 | 说明 |
 |------|----------|------|
-| 运行时 | Python 3.10+ | |
-| 框架 | FastAPI | 异步、高性能 |
-| ASGI 服务器 | uvicorn | 生产级 ASGI |
-| HTTP 客户端 | httpx | 异步 HTTP 调用 |
-| HTML 解析 | lxml | 高性能解析 |
-| 缓存 | cachetools | 内存缓存 |
-| 环境变量 | python-dotenv | 配置管理 |
+| 运行时 | Node.js 18+ | |
+| 框架 | Express.js | 高性能 Web 框架 |
+| HTTP 客户端 | axios | 异步 HTTP 调用 |
+| HTML 解析 | cheerio | 高性能解析 |
+| 缓存 | node-cache | 内存缓存 |
+| 环境变量 | dotenv | 配置管理 |
+| 跨域 | cors | 跨域资源共享 |
 
 ---
 
