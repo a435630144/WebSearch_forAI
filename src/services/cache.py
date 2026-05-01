@@ -9,7 +9,7 @@ def get(key: str):
 def set(key: str, value):
     cache[key] = value
 
-def generate_key(query: str, num_results: int, mode: str, engines: list) -> str:
-    data = f"{query}|{num_results}|{mode}|{','.join(engines or [])}"
+def generate_key(query: str, num_results: int, mode: str, engines: list, time_range: str = "") -> str:
+    data = f"{query}|{num_results}|{mode}|{','.join(engines or [])}|{time_range}"
     hash_val = hash(data)
     return f"search:{abs(hash_val)}"

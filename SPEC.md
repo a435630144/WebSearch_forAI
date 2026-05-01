@@ -11,16 +11,14 @@
 ### 项目定位
 - **名称**: `WebSearch_forAI`
 - **技术栈**: Python + FastAPI
-- **部署环境**: 局域网 NAS
-- **组合方式**: 在 Node-RED 中拼装完整流程（搜 → 整 → AI分析）
-- **SearXNG**: 作为子进程集成，随主应用启动
+- **部署环境**: 局域网 NAS (Docker)
+- **SearXNG**: 远程 Docker 部署，访问地址: http://192.168.3.64:8080
 
 ### 核心功能
-1. **SearXNG 子进程管理** - 随应用启动/停止 SearXNG 服务
-2. **搜索转发** - 调用本地 SearXNG 实例
-3. **结果清洗** - HTML 清洗、去重、字段标准化
-4. **缓存** - 内存缓存，减少重复调用
-5. **灵活整理** - 支持 auto / list / extract 三种模式
+1. **搜索转发** - 调用远程 SearXNG 实例
+2. **结果清洗** - HTML 清洗、去重、字段标准化
+3. **缓存** - 内存缓存，减少重复调用
+4. **灵活整理** - 支持 auto / list / extract 三种模式
 
 ---
 
@@ -34,7 +32,6 @@
 | HTTP 客户端 | httpx | 异步 HTTP 调用 |
 | HTML 解析 | lxml | 高性能解析 |
 | 缓存 | cachetools | 内存缓存 |
-| 进程管理 | subprocess + threading | SearXNG 子进程 |
 | 环境变量 | python-dotenv | 配置管理 |
 
 ---
@@ -43,7 +40,7 @@
 
 | 服务 | 地址 |
 |------|------|
-| SearXNG 子进程 | localhost:4000 |
+| SearXNG 远程服务 | http://192.168.3.64:8080 |
 | FastAPI 主服务 | localhost:4001 |
 
 ---

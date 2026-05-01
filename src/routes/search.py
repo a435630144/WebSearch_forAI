@@ -11,6 +11,7 @@ class SearchRequest(BaseModel):
     num_results: int = 10
     mode: str = "auto"
     engines: list = []
+    time_range: str = ""  # "", "day", "week", "month", "year"
 
     class Config:
         json_schema_extra = {
@@ -18,7 +19,8 @@ class SearchRequest(BaseModel):
                 "query": "最新的AI模型有哪些",
                 "num_results": 10,
                 "mode": "auto",
-                "engines": []
+                "engines": [],
+                "time_range": "month"
             }
         }
 
@@ -33,7 +35,10 @@ async def search(req: SearchRequest):
     if req.mode not in ("auto", "list", "extract"):
         raise HTTPException(status_code=400, detail="mode 需为 auto/list/extract 之一")
 
-    cache_key = generate_key(req.query, req.num_results, req.mode, req.engines)
+    if req.time_range not in ("", "day", "week", "month", "year"):
+        raise HTTPException(status_code=400, detail="time_range 需为 day/week/month/year 或空")
+
+    cache_key = generate_key(req.query, req.num_results, req.mode, req.engines, req.time_range)
     cached = get(cache_key)
     if cached:
         cached["meta"]["cached"] = True
@@ -42,10 +47,14 @@ async def search(req: SearchRequest):
     import time
     start = time.time()
 
-    raw_results = searxng_service.search(req.query, req.num_results, req.engines)
+    try:
+        raw_results = searxng_service.search(req.query, req.num_results, req.engines, req.time_range)
+    except Exception as e:
+        raise HTTPException(status_code=504, detail=f"搜索服务响应超时或出错: {str(e)}")
+
     response_time = int((time.time() - start) * 1000)
 
-    result = aggregate(raw_results, req.query, req.mode)
+    result = aggregate(raw_results, req.query, req.mode, req.time_range)
 
     response = {
         "query": req.query,
