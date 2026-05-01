@@ -11,13 +11,11 @@ from config.settings import API_PORT
 async def lifespan(app: FastAPI):
     searxng_dir = os.path.join(os.path.dirname(__file__), "..", "searxng")
     if not os.path.exists(searxng_dir):
-        print("Error: searxng directory not found")
-        sys.exit(1)
+        raise RuntimeError("searxng directory not found")
 
     print("Starting SearXNG...")
     if not searxng_service.start(searxng_dir):
-        print("Error: Failed to start SearXNG")
-        sys.exit(1)
+        raise RuntimeError("Failed to start SearXNG")
     print("SearXNG started successfully")
 
     yield
@@ -30,7 +28,6 @@ app = FastAPI(title="WebSearch Backend", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
