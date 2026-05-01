@@ -80,7 +80,8 @@ class SearXNGService:
         resp = httpx.get(
             f"{SEARXNG_URL}/search",
             params=params,
-            timeout=REQUEST_TIMEOUT / 1000
+            timeout=REQUEST_TIMEOUT / 1000,
+            http1=True
         )
         resp.raise_for_status()
         data = resp.json()
