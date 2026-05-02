@@ -14,6 +14,21 @@ cp .env.example .env
 npm start
 ```
 
+服务启动后访问：
+- API 地址: `http://localhost:4001`
+- 健康检查: `GET http://localhost:4001/health`
+- 搜索接口: `POST http://localhost:4001/api/search`
+
+## 技术栈
+
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **HTTP Client**: axios
+- **HTML Parsing**: cheerio
+- **Caching**: node-cache
+- **Environment Variables**: dotenv
+- **CORS**: cors
+
 ## API
 
 ### 健康检查
@@ -54,7 +69,8 @@ Content-Type: application/json
   "query": "最新AI大模型有哪些",
   "num_results": 10,
   "mode": "auto",
-  "engines": ["baidu", "bing"]
+  "engines": ["baidu", "bing"],
+  "time_range": "month"
 }
 ```
 
@@ -87,9 +103,16 @@ Content-Type: application/json
 
 **mode 参数说明：**
 
-- `auto`：智能模式，自动判断返回格式
+- `auto`：智能模式，根据 query 关键词自动判断返回格式
 - `list`：列表模式，返回搜索结果列表（默认）
-- `extract`：提取模式，额外提取结构化数据
+- `extract`：提取模式，额外提取结构化数据（truncate snippet to 200 chars）
+
+**auto 模式判断规则：**
+
+| 模式 | 关键词示例 |
+|------|------------|
+| list | 谁、什么、哪个、多少、何时、哪里 (中文) / who、what、which、when、where (英文) |
+| extract | 为什么、怎么、如何、评价、分析、比较、解释 (中文) / why、how、analyze、compare、evaluate (英文) |
 
 **错误响应：**
 
@@ -97,8 +120,8 @@ Content-Type: application/json
 {
   "success": false,
   "error": {
-    "code": "REQUEST_TIMEOUT",
-    "message": "搜索服务响应超时或出错: timed out"
+    "code": "INVALID_PARAMS",
+    "message": "query parameter is required and must be a string"
   }
 }
 ```
@@ -113,12 +136,36 @@ Content-Type: application/json
 | CACHE_TTL | 300 | 内存缓存有效期（秒） |
 | REQUEST_TIMEOUT | 30000 | 搜索请求超时时间（毫秒） |
 
-## 技术栈
+## 项目结构
 
-- **Runtime**: Node.js 18+
-- **Framework**: Express.js
-- **HTTP Client**: axios
-- **HTML Parsing**: cheerio
-- **Caching**: node-cache
-- **Environment Variables**: dotenv
-- **CORS**: cors
+```
+WebSearch_forAI/
+├── src/
+│   ├── index.js              # Express 应用入口
+│   ├── config/
+│   │   └── index.js          # 环境变量加载
+│   ├── routes/
+│   │   └── search.js         # POST /api/search 路由
+│   ├── services/
+│   │   ├── searxng.js        # SearXNG HTTP 客户端
+│   │   ├── cache.js          # TTL 缓存服务
+│   │   └── aggregator.js     # 时间过滤 + 模式选择
+│   ├── middleware/
+│   │   └── error_handler.js  # 全局错误处理
+│   └── utils/
+│       ├── parser.js          # HTML 清洗、URL 去重
+│       └── detect_mode.js     # auto 模式判断
+├── tests/                    # 单元测试
+├── .env.example
+├── package.json
+├── README.md
+└── SPEC.md
+```
+
+## 测试
+
+```bash
+npm test
+```
+
+运行单元测试验证核心功能。
